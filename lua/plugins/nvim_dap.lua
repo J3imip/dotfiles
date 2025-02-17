@@ -60,7 +60,15 @@ return {
     end, { noremap = true, silent = true, desc = "Build & Debug Rust" })
 
     -- Ensure DAP UI stays open
-    dapui.setup()
+    dapui.setup({
+      layouts = { -- Disable side panels by removing them from layouts
+        {
+          elements = { "repl", "console" },
+          size = 10, -- Height of the bottom panel
+          position = "bottom",
+        },
+      },
+    })
     dap.listeners.after.event_initialized["dapui_config"] = function()
       vim.schedule(function()
         dapui.open()
