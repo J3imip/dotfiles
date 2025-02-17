@@ -16,7 +16,31 @@ keymap("n", "<F10>", dap.step_over, { desc = "Step Over" }) -- Step over a funct
 keymap("n", "<F11>", dap.step_into, { desc = "Step Into" }) -- Step into a function call
 keymap("n", "<F12>", dap.step_out, { desc = "Step Out" }) -- Step out of a function
 keymap("n", "<leader>db", dap.run_to_cursor, { desc = "Run to Cursor" }) -- Run until the cursor location
-keymap("n", "<leader>dx", dap.terminate, { desc = "Terminate Debugging" }) -- Stop debugging
+keymap("n", "<leader>dx", function()
+  local crate_path = dap_rust.find_project_root()
+  local binary_path = dap_rust.get_binary_path(crate_path)
+
+  if binary_path then
+    -- Extract just the binary name to kill process
+    local binary_name = binary_path:match("([^/]+)$")
+
+    vim.notify("🚫 Terminating Debugging & Killing Process: " .. binary_name, vim.log.levels.WARN)
+
+    -- Terminate the debugging session
+    dap.terminate()
+
+    -- Ensure DAP disconnects and UI closes
+    vim.defer_fn(function()
+      dap.disconnect()
+      dapui.close()
+    end, 100)
+
+    -- Kill the debugged binary process
+    vim.fn.jobstart("pkill -9 -f " .. binary_name, { detach = true })
+  else
+    vim.notify("⚠️ Could not determine binary path!", vim.log.levels.ERROR)
+  end
+end, { noremap = true, silent = true, desc = "Terminate Debugging & Kill Process" })
 
 -- 🎯 Breakpoints with conditions & log messages
 keymap("n", "<leader>dB", function()
