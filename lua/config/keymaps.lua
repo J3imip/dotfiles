@@ -49,7 +49,7 @@ end, { desc = "Set Breakpoint with Condition" })
 keymap("n", "<leader>dl", function()
   dap.set_breakpoint(nil, nil, vim.fn.input("Log message: "))
 end, { desc = "Set Logpoint" })
-keymap("n", "<leader>dc", dap.clear_breakpoints, { desc = "Clear All Breakpoints" }) -- Remove all breakpoints
+keymap("n", "<leader>dL", dap.clear_breakpoints, { desc = "Clear All Breakpoints" }) -- Remove all breakpoints
 
 -- 🖥 Debug UI controls
 keymap("n", "<leader>du", dapui.toggle, { desc = "Toggle Debug UI" })
